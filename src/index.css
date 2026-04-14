@@ -1,0 +1,507 @@
+@import url("https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Geist:wght@300;400;500;600&display=swap");
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* ─────────────────────────────────────────
+   TOKENS
+───────────────────────────────────────── */
+:root {
+  --accent: #c8ff47;
+  --accent-dim: rgba(200, 255, 71, 0.15);
+  color-scheme: dark;
+}
+
+/* ─────────────────────────────────────────
+   RESET
+───────────────────────────────────────── */
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html {
+  scroll-behavior: auto;
+  overflow-x: hidden;
+}
+
+body {
+  background: #000;
+  color: #fff;
+  font-family: "Geist", sans-serif;
+  cursor: none;
+  overscroll-behavior: none;
+}
+
+/* ─────────────────────────────────────────
+   FONTS
+───────────────────────────────────────── */
+.font-serif {
+  font-family: "Instrument Serif", serif;
+}
+.font-ui {
+  font-family: "Geist", sans-serif;
+}
+
+/* ─────────────────────────────────────────
+   CUSTOM CURSOR
+───────────────────────────────────────── */
+.cursor-ring {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 36px;
+  height: 36px;
+  border: 1px solid rgba(255, 255, 255, 0.45);
+  border-radius: 50%;
+  pointer-events: none;
+  z-index: 10000;
+  will-change: transform;
+  transition: width 0.25s ease, height 0.25s ease, border-color 0.25s ease, background 0.25s ease;
+}
+
+.cursor-dot {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 6px;
+  height: 6px;
+  background: var(--accent);
+  border-radius: 50%;
+  pointer-events: none;
+  z-index: 10001;
+  will-change: transform;
+}
+
+body:has(a:hover) .cursor-ring,
+body:has(button:hover) .cursor-ring {
+  width: 54px;
+  height: 54px;
+  border-color: var(--accent);
+  background: var(--accent-dim);
+}
+
+/* ─────────────────────────────────────────
+   NOISE OVERLAY (film grain)
+───────────────────────────────────────── */
+.noise-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 997;
+  pointer-events: none;
+  opacity: 0.028;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='300' height='300'%3E%3Cfilter id='n' x='0' y='0'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.75' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='300' height='300' filter='url(%23n)' opacity='1'/%3E%3C/svg%3E");
+  background-repeat: repeat;
+  background-size: 200px 200px;
+  mix-blend-mode: screen;
+}
+
+/* ─────────────────────────────────────────
+   GUIDE LINES
+───────────────────────────────────────── */
+.guide-lines {
+  position: fixed;
+  inset: 0;
+  z-index: 996;
+  pointer-events: none;
+  background-image: linear-gradient(
+    to right,
+    transparent 0,
+    transparent calc(20% - 1px),
+    rgba(255, 255, 255, 0.035) calc(20% - 1px),
+    rgba(255, 255, 255, 0.035) 20%,
+    transparent 20%,
+    transparent calc(40% - 1px),
+    rgba(255, 255, 255, 0.035) calc(40% - 1px),
+    rgba(255, 255, 255, 0.035) 40%,
+    transparent 40%,
+    transparent calc(60% - 1px),
+    rgba(255, 255, 255, 0.035) calc(60% - 1px),
+    rgba(255, 255, 255, 0.035) 60%,
+    transparent 60%,
+    transparent calc(80% - 1px),
+    rgba(255, 255, 255, 0.035) calc(80% - 1px),
+    rgba(255, 255, 255, 0.035) 80%,
+    transparent 80%
+  );
+}
+
+/* ─────────────────────────────────────────
+   PANELS
+───────────────────────────────────────── */
+.panel {
+  width: 100vw;
+  height: 100vh;
+  flex-shrink: 0;
+  position: relative;
+  overflow: hidden;
+}
+
+/* ─────────────────────────────────────────
+   HORIZONTAL TRACK
+───────────────────────────────────────── */
+.h-track {
+  display: flex;
+  height: 100%;
+  will-change: transform;
+}
+
+/* ─────────────────────────────────────────
+   PANEL LABEL (section tag)
+───────────────────────────────────────── */
+.panel-label {
+  font-size: 0.65rem;
+  letter-spacing: 0.28em;
+  text-transform: uppercase;
+  color: rgba(255, 255, 255, 0.38);
+}
+
+/* ─────────────────────────────────────────
+   ACCENT UTILITIES
+───────────────────────────────────────── */
+.text-accent {
+  color: var(--accent);
+}
+.bg-accent {
+  background: var(--accent);
+}
+
+/* ─────────────────────────────────────────
+   SERVICE ROW HOVER
+───────────────────────────────────────── */
+.service-row {
+  display: flex;
+  align-items: center;
+  gap: 2rem;
+  padding: 1.5rem 0;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.07);
+  cursor: pointer;
+  transition: border-color 0.3s ease;
+}
+.service-row:hover {
+  border-color: rgba(255, 255, 255, 0.2);
+}
+.service-row:hover .service-title {
+  transform: translateX(8px);
+  color: var(--accent);
+}
+.service-row:hover .service-arrow {
+  opacity: 1;
+  transform: translateX(4px);
+}
+.service-title {
+  font-family: "Instrument Serif", serif;
+  font-size: clamp(2rem, 3.2vw, 3.5rem);
+  flex: 1;
+  transition: transform 0.3s ease, color 0.3s ease;
+  line-height: 1;
+}
+.service-num {
+  font-size: 0.7rem;
+  color: rgba(255, 255, 255, 0.3);
+  width: 2rem;
+  flex-shrink: 0;
+  transition: color 0.3s;
+}
+.service-row:hover .service-num {
+  color: var(--accent);
+}
+.service-desc {
+  font-size: 0.8rem;
+  color: rgba(255, 255, 255, 0.45);
+  max-width: 220px;
+  display: none;
+}
+.service-arrow {
+  font-size: 1.2rem;
+  color: rgba(255, 255, 255, 0.25);
+  opacity: 0;
+  transition: opacity 0.3s ease, transform 0.3s ease;
+}
+@media (min-width: 1024px) {
+  .service-desc {
+    display: block;
+  }
+}
+
+/* ─────────────────────────────────────────
+   PORTFOLIO CARDS
+───────────────────────────────────────── */
+.work-card {
+  position: relative;
+  overflow: hidden;
+  border-radius: 16px;
+  border: 1px solid rgba(255, 255, 255, 0.07);
+  cursor: pointer;
+  transition: border-color 0.5s ease;
+}
+.work-card:hover {
+  border-color: rgba(255, 255, 255, 0.2);
+}
+.work-card img {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  opacity: 0.35;
+  transition: opacity 0.6s ease, transform 0.7s ease;
+}
+.work-card:hover img {
+  opacity: 0.55;
+  transform: scale(1.06);
+}
+.work-card-body {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  padding: 1.5rem;
+  background: linear-gradient(to top, rgba(0, 0, 0, 0.9) 0%, transparent 100%);
+}
+.work-result {
+  font-size: 0.75rem;
+  color: var(--accent);
+  opacity: 0;
+  transform: translateY(6px);
+  transition: opacity 0.3s ease 0.1s, transform 0.3s ease 0.1s;
+}
+.work-card:hover .work-result {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* ─────────────────────────────────────────
+   CONTACT INPUTS
+───────────────────────────────────────── */
+.c-input {
+  width: 100%;
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.09);
+  border-radius: 12px;
+  padding: 14px 18px;
+  font-size: 0.875rem;
+  color: #fff;
+  outline: none;
+  transition: border-color 0.2s ease;
+  font-family: "Geist", sans-serif;
+}
+.c-input:focus {
+  border-color: rgba(255, 255, 255, 0.3);
+}
+.c-input::placeholder {
+  color: rgba(255, 255, 255, 0.28);
+}
+
+/* ─────────────────────────────────────────
+   SCROLL HINT
+───────────────────────────────────────── */
+@keyframes scroll-hint {
+  0% {
+    transform: scaleY(0);
+    transform-origin: top;
+  }
+  45% {
+    transform: scaleY(1);
+    transform-origin: top;
+  }
+  55% {
+    transform: scaleY(1);
+    transform-origin: bottom;
+  }
+  100% {
+    transform: scaleY(0);
+    transform-origin: bottom;
+  }
+}
+.scroll-hint-line {
+  width: 1px;
+  height: 44px;
+  background: rgba(255, 255, 255, 0.35);
+  animation: scroll-hint 1.8s ease-in-out infinite;
+}
+
+/* ─────────────────────────────────────────
+   HERO ANIMATIONS
+───────────────────────────────────────── */
+@keyframes fade-rise {
+  from {
+    opacity: 0;
+    transform: translateY(28px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+.animate-fade-rise {
+  animation: fade-rise 0.9s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+.animate-fade-rise-delay {
+  animation: fade-rise 0.9s cubic-bezier(0.16, 1, 0.3, 1) 0.18s both;
+}
+.animate-fade-rise-delay-2 {
+  animation: fade-rise 0.9s cubic-bezier(0.16, 1, 0.3, 1) 0.36s both;
+}
+
+/* ─────────────────────────────────────────
+   VIDEO ZOOM
+───────────────────────────────────────── */
+@keyframes slow-zoom {
+  from {
+    transform: scale(1);
+  }
+  to {
+    transform: scale(1.06);
+  }
+}
+.video-zoom {
+  animation: slow-zoom 24s ease-in-out infinite alternate;
+  transform-origin: center;
+}
+
+/* ─────────────────────────────────────────
+   TICKER MARQUEE
+───────────────────────────────────────── */
+@keyframes marquee {
+  from {
+    transform: translateX(0);
+  }
+  to {
+    transform: translateX(-50%);
+  }
+}
+.marquee-inner {
+  display: flex;
+  animation: marquee 18s linear infinite;
+  white-space: nowrap;
+}
+
+/* ─────────────────────────────────────────
+   SELECTION
+───────────────────────────────────────── */
+::selection {
+  background: var(--accent);
+  color: #000;
+}
+
+/* ─────────────────────────────────────────
+   SCROLLBAR — HIDE
+───────────────────────────────────────── */
+::-webkit-scrollbar {
+  width: 0;
+  height: 0;
+}
+
+/* ─────────────────────────────────────────
+   DETAIL PAGE BUTTONS
+───────────────────────────────────────── */
+.detail-btn-accent {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 14px 32px;
+  border-radius: 9999px;
+  background: #c8ff47;
+  color: #000;
+  font-size: 0.72rem;
+  letter-spacing: 0.2em;
+  font-weight: 500;
+  text-decoration: none;
+  transition: background 0.3s ease, transform 0.2s ease;
+  cursor: pointer;
+}
+.detail-btn-accent:hover {
+  background: #fff;
+  transform: scale(1.02);
+}
+
+.detail-btn-outline {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 13px 28px;
+  border-radius: 9999px;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  color: rgba(255, 255, 255, 0.65);
+  font-size: 0.72rem;
+  letter-spacing: 0.2em;
+  text-decoration: none;
+  transition: border-color 0.3s ease, color 0.3s ease;
+  cursor: pointer;
+  background: transparent;
+}
+.detail-btn-outline:hover {
+  border-color: rgba(255, 255, 255, 0.5);
+  color: #fff;
+}
+
+/* ─────────────────────────────────────────
+   DETAIL TAGS
+───────────────────────────────────────── */
+.detail-tag {
+  display: inline-block;
+  padding: 5px 12px;
+  border-radius: 9999px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  background: rgba(255, 255, 255, 0.04);
+  font-size: 0.6rem;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: rgba(255, 255, 255, 0.55);
+}
+
+/* ─────────────────────────────────────────
+   DETAIL PAGE — line-clamp utility
+───────────────────────────────────────── */
+.line-clamp-3 {
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.line-clamp-2 {
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+/* ─────────────────────────────────────────
+   MOBILE FALLBACK — vertical layout
+───────────────────────────────────────── */
+@media (max-width: 767px) {
+  body {
+    cursor: auto;
+  }
+  .cursor-ring,
+  .cursor-dot {
+    display: none;
+  }
+  .scroll-driver {
+    height: auto !important;
+  }
+  .sticky-wrapper {
+    position: static !important;
+    height: auto !important;
+    overflow: visible !important;
+  }
+  .h-track {
+    flex-direction: column !important;
+    width: 100% !important;
+    transform: none !important;
+  }
+  .panel {
+    width: 100% !important;
+    height: auto !important;
+    min-height: 100svh;
+  }
+  .guide-lines {
+    display: none;
+  }
+}
