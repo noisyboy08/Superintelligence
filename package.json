@@ -4,7 +4,8 @@
   "description": "",
   "scripts": {
     "dev": "vite",
-    "build": "tsc -b && vite build",
+    "typecheck": "tsc -b",
+    "build": "vite build",
     "preview": "vite preview"
   },
   "keywords": [],
