@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from "react";
+import Hls from "hls.js";
 import { Link } from "react-router-dom";
 import { services as serviceData, caseStudies } from "./data";
 
@@ -22,7 +23,11 @@ const marqueeParts = [
   "CREATIVE DEV", "·", "MOTION IDENTITY", "·", "EDITORIAL LAYOUTS", "·",
 ];
 
+const HERO_VIDEO_SRC = "https://stream.mux.com/tLkHO1qZoaaQOUeVWo8hEBeGQfySP02EPS02BmnNFyXys.m3u8";
+const HERO_POSTER_SRC = "https://images.unsplash.com/photo-1639322537228-f710d846310a?auto=format&fit=crop&w=1920&q=80";
+
 export default function App() {
+  const heroVideoRef = useRef<HTMLVideoElement>(null);
   const driverRef = useRef<HTMLDivElement>(null);
   const trackRef = useRef<HTMLDivElement>(null);
   const cursorRingRef = useRef<HTMLDivElement>(null);
@@ -35,6 +40,30 @@ export default function App() {
   const [quoteIdx, setQuoteIdx] = useState(0);
   const [introVisible, setIntroVisible] = useState(true);
   const [introLeaving, setIntroLeaving] = useState(false);
+
+  useEffect(() => {
+    const video = heroVideoRef.current;
+    if (!video) return;
+
+    let hls: Hls | null = null;
+
+    if (Hls.isSupported()) {
+      hls = new Hls({ enableWorker: false });
+      hls.loadSource(HERO_VIDEO_SRC);
+      hls.attachMedia(video);
+      hls.on(Hls.Events.ERROR, (_event, data) => {
+        if (data.fatal) video.style.display = "none";
+      });
+    } else if (video.canPlayType("application/vnd.apple.mpegurl")) {
+      video.src = HERO_VIDEO_SRC;
+    }
+
+    return () => {
+      hls?.destroy();
+      video.removeAttribute("src");
+      video.load();
+    };
+  }, []);
 
   /* ── Intro screen ── */
   useEffect(() => {
@@ -249,10 +278,57 @@ export default function App() {
                 PANEL 1 — HERO
             ════════════════════════════════ */}
             <section className="panel bg-black">
-              <video autoPlay loop muted playsInline className="absolute inset-0 w-full h-full object-cover video-zoom">
-                <source src="https://res.cloudinary.com/dfonotyfb/video/upload/v1775585556/dds3_1_rqhg7x.mp4" type="video/mp4" />
-              </video>
-              <div className="absolute inset-0 bg-gradient-to-b from-black/25 via-black/10 to-black/65 z-[1]" />
+              <div
+                className="absolute inset-0 bg-cover bg-center video-zoom"
+                style={{ backgroundImage: `url(${HERO_POSTER_SRC})` }}
+              />
+              <video
+                ref={heroVideoRef}
+                autoPlay
+                loop
+                muted
+                playsInline
+                preload="auto"
+                poster={HERO_POSTER_SRC}
+                className="absolute inset-0 w-full h-full object-cover opacity-60 video-zoom"
+                onError={(event) => {
+                  event.currentTarget.style.display = "none";
+                }}
+              />
+              <div className="absolute inset-0 z-[1] bg-[linear-gradient(90deg,#070b0a_0%,rgba(7,11,10,0.72)_30%,transparent_72%)]" />
+              <div className="absolute inset-0 z-[1] bg-[linear-gradient(0deg,#000_0%,rgba(0,0,0,0.74)_14%,transparent_48%)]" />
+              <div className="absolute inset-y-0 left-1/4 z-[2] hidden w-px bg-white/10 md:block" />
+              <div className="absolute inset-y-0 left-1/2 z-[2] hidden w-px bg-white/10 md:block" />
+              <div className="absolute inset-y-0 left-3/4 z-[2] hidden w-px bg-white/10 md:block" />
+              <svg
+                aria-hidden="true"
+                className="absolute left-1/2 top-[12%] z-[2] h-[220px] w-[880px] max-w-[95vw] -translate-x-1/2 opacity-55"
+                viewBox="0 0 880 220"
+                fill="none"
+              >
+                <defs>
+                  <filter id="hero-glow-blur" x="-10%" y="-60%" width="120%" height="220%">
+                    <feGaussianBlur stdDeviation="25" />
+                  </filter>
+                </defs>
+                <ellipse
+                  cx="440"
+                  cy="110"
+                  rx="330"
+                  ry="42"
+                  fill="#125c50"
+                  filter="url(#hero-glow-blur)"
+                />
+                <ellipse
+                  cx="440"
+                  cy="110"
+                  rx="220"
+                  ry="24"
+                  fill="#5ed2c8"
+                  fillOpacity="0.42"
+                  filter="url(#hero-glow-blur)"
+                />
+              </svg>
               <div className="relative z-10 h-full flex flex-col items-center justify-center text-center px-8">
                 <p className="animate-fade-rise text-[0.65rem] tracking-[0.35em] uppercase text-white/65 mb-7">
                   AI-first Assistant
